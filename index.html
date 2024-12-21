@@ -18,7 +18,7 @@
       max-width: 600px;
       text-align: center;
     }
-    input[type="file"] {
+    input[type="file"], input[type="text"] {
       width: 100%;
       padding: 10px;
       margin: 10px 0;
@@ -44,11 +44,20 @@
       border-radius: 4px;
       white-space: pre-wrap;
     }
+    .note {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #555;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Describe an Image</h1>
+    <input type="text" id="apiKeyInput" placeholder="Enter your Hugging Face API key">
+    <div class="note">
+      Don't have an API key? Get one from <a href="https://huggingface.co/settings/tokens" target="_blank">Hugging Face</a>.
+    </div>
     <input type="file" id="imageInput" accept="image/*">
     <button id="describeBtn">Describe Image</button>
     <div class="output" id="output"></div>
@@ -57,11 +66,17 @@
   <script type="module">
     import { HfInference } from "https://cdn.jsdelivr.net/npm/@huggingface/inference/+esm";
 
-    const client = new HfInference("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"); // Replace with your actual Hugging Face API key
-
     document.getElementById("describeBtn").addEventListener("click", async () => {
+      const apiKey = document.getElementById("apiKeyInput").value.trim();
       const imageInput = document.getElementById("imageInput");
       const outputDiv = document.getElementById("output");
+
+      if (!apiKey) {
+        outputDiv.textContent = "Please enter your Hugging Face API key.";
+        return;
+      }
+
+      const client = new HfInference(apiKey);
 
       if (!imageInput.files || imageInput.files.length === 0) {
         outputDiv.textContent = "Please select an image file.";
